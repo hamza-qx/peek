@@ -1,7 +1,7 @@
 # peek-cli
 
-A simple, fast images, text files, and hex viewer.
-![image](https://github.com/user-attachments/assets/cad28fc5-e9c3-459c-8d02-3248756598d3)
+A simple, fast image, text files, zip and hex viewer.
+![image](https://github.com/user-attachments/assets/438d01c2-03c3-4ca9-907e-695772754f80)
 
 ## Usage
 ```
@@ -31,7 +31,6 @@ peek <file> [height] [options]
 | `--hex`                     | View file in hex.                                                              |
 
 ## Examples
-
 * Show help:
 
   ```
@@ -42,26 +41,27 @@ peek <file> [height] [options]
   ```
   peek image.png 40
   ```
-* Preview the first 30 lines of a text file:
+![image](https://github.com/user-attachments/assets/6615b14d-8d5e-4f02-9ea9-2553b077337c)
+
+* Preview the first 5 lines of a text file:
 
   ```
-  peek notes.txt --lines 30
+  peek notes.txt --lines 5
   ```
-* Same as above but using `--height`:
-
-  ```
-  peek image.png --height 40
-  ```
+![image](https://github.com/user-attachments/assets/377d8fdb-f375-4164-bbae-fb4b0b4e98cb)
 * View contents of a zip:
 
   ```
   peek archive.zip
   ```
-* Force hex view of a text file:
+![image](https://github.com/user-attachments/assets/5f0a85fb-4225-4054-9bd6-7aefbba8a2da)
+* Hex view of the first 20 lines in a text file:
 
   ```
-  peek document.txt --hex
+  peek document.txt --hex --height 20
   ```
+
+![image](https://github.com/user-attachments/assets/b35ef82c-b612-4932-bf76-a5fb024b3c0b)
 
 ## Todo
 * Add markdown (.md) support
