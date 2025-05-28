@@ -1,0 +1,81 @@
+name: build and release using pyoxidizer
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+env:
+  PYOXIDIZER_PROFILE: release
+  CLI_NAME: peek
+  ENTRY_POINT: peek.py
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          default: true
+
+      - name: setup python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: get pyoxidizer
+        run: cargo install pyoxidizer
+        
+      - name: install Pillow
+        run: pip install Pillow
+
+      - name: build
+        run: |
+          echo 'config.python_embed_entry_point = "${{ env.ENTRY_POINT }}"' >> pyoxidizer.bzl
+          pyoxidizer build --release
+
+      - name: install fpm for linux
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ruby ruby-dev build-essential
+          sudo gem install --no-document fpm
+
+      - name: make linux binary
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          BIN=build/${{ env.PYOXIDIZER_PROFILE }}/bin/${{ env.CLI_NAME }}
+          chmod +x "$BIN"
+          # Create .tar.gz for portable usage
+          tar czf peek-linux.tar.gz -C "$(dirname $BIN)" "$(basename $BIN)"
+          # Package .deb with FPM
+          fpm -s dir \
+              -t deb \
+              -n ${{ env.CLI_NAME }} \
+              -v "${{ github.ref_name }}" \
+              --prefix /usr/local/bin \
+              "$BIN"
+
+      - name: make exe
+        if: matrix.os == 'windows-latest'
+        run: |
+          BIN=build\\${{ env.PYOXIDIZER_PROFILE }}\\bin\\${{ env.CLI_NAME }}.exe
+          powershell -Command "Compress-Archive -Path $env:BIN -DestinationPath peek-windows.zip"
+
+      - name: upload
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            peek-*.tar.gz
+            peek-*.zip
+            peek_*.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
