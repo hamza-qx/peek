@@ -31,13 +31,14 @@ jobs:
         run: pip install nuitka
 
       - name: Compile with Nuitka
+        shell: bash
         run: |
-          # --onefile → single EXE
-          python -m nuitka \
+          python -m nuitka peek.py \
             --standalone \
             --onefile \
-            --output-dir=dist \
-            --remove-output \
+            --enable-plugin=pyqt5 \
+            --output-dir=dist
+
             ${{ env.ENTRY_POINT }}
 
       - name: Package Linux
