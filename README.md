@@ -65,4 +65,4 @@ peek <file> [height] [options]
 
 ## Todo
 * Add markdown (.md) support
-* add better image processing (bicubic interpolation, dithering)
+* Add support for pdfs, html pages
